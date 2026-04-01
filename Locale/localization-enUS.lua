@@ -118,6 +118,7 @@ PALLYPOWER_OPTIONS_USE_UNITXP_SP3_LOS = "Use UnitXP_SP3.dll for Line of Sight ch
 PALLYPOWER_OPTIONS_USE_HDICONS = "Use HD Icons";
 PALLYPOWER_OPTIONS_TRANSPARENCY = "Global Transparency";
 PALLYPOWER_OPTIONS_COLOR_BUFFBAR = "Color BuffBar (Red=Missing, Yellow=Partial, Transparent=Complete)";
+PALLYPOWER_OPTIONS_LEFTCLICK_OVERRIDE = "Use per-player overrides on left-click";
 
 PALLYPOWER_TEXT_DROPDOWN_SAVENEW = "Save New Set";
 PALLYPOWER_TEXT_DROPDOWN_SAVECURRENT = "Save Current Set";

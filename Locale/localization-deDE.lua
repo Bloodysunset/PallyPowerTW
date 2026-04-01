@@ -118,6 +118,7 @@ if ( GetLocale() == "deDE" ) then
     PALLYPOWER_OPTIONS_USE_HDICONS = "HD-Symbole verwenden";
     PALLYPOWER_OPTIONS_TRANSPARENCY = "Globale Transparenz";
     PALLYPOWER_OPTIONS_COLOR_BUFFBAR = "Färbe BuffBar (Rot=Fehlt, Gelb=Teilweise, Transparent=Vollständig)";
+    PALLYPOWER_OPTIONS_LEFTCLICK_OVERRIDE = "Spielerspezifische Zuweisungen bei Linksklick nutzen";
 
     PALLYPOWER_TEXT_DROPDOWN_SAVENEW = "Neues Set speichern";
     PALLYPOWER_TEXT_DROPDOWN_SAVECURRENT = "Aktuelles Set speichern";
