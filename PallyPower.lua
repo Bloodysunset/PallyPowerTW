@@ -3217,11 +3217,18 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
         end
 
         local bltest = GetNormalBlessings(UnitName("player"),btn.classID, stats.name)
-        if bltest ~= -1 and (mousebtn == "RightButton" or PP_PerUser.leftclickoverride) then
+        if bltest ~= -1 and mousebtn == "RightButton" then
             -- Per-player overrides bypass class-level recent-cast locks.
             RecentCast = false
             skipclear = true
             castspelloverride = bltest
+        elseif bltest ~= -1 and PP_PerUser.leftclickoverride then
+            -- On left-click, only prioritize override targets that currently need buff.
+            if string.find(table.concat(btn.need, " "), stats.name) then
+                RecentCast = false
+                skipclear = true
+                castspelloverride = bltest
+            end
         elseif mousebtn == "RightButton" then
             if string.find(table.concat(btn.need, " "), stats.name) or 
                (LastCastPlayer[stats.name] and ( LastCastPlayer[stats.name] < PALLYPOWER_NORMALBLESSINGDURATION - PALLYPOWER_BLESSINGTRESHOLD ) ) then 
@@ -3467,11 +3474,18 @@ function PallyPower_AutoBless(mousebutton)
                 end
 
                 local bltest = GetNormalBlessings(UnitName("player"),btn.classID, stats.name)
-                if bltest ~= -1 and (mousebutton == "Hotkey1" or PP_PerUser.leftclickoverride) then
+                if bltest ~= -1 and mousebutton == "Hotkey1" then
                     -- Per-player overrides bypass class-level recent-cast locks.
                     RecentCast = false
                     skipclear = true
                     castspelloverride = bltest
+                elseif bltest ~= -1 and PP_PerUser.leftclickoverride then
+                    -- On left-click equivalent, only prioritize override targets that need buff.
+                    if string.find(table.concat(btn.need, " "), stats.name) then
+                        RecentCast = false
+                        skipclear = true
+                        castspelloverride = bltest
+                    end
                 elseif mousebutton == "Hotkey1" then
                     if string.find(table.concat(btn.need, " "), stats.name) or 
                        (LastCastPlayer[stats.name] and ( LastCastPlayer[stats.name] < PALLYPOWER_NORMALBLESSINGDURATION - PALLYPOWER_BLESSINGTRESHOLD ) ) then 
