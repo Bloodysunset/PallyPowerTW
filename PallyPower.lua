@@ -3138,9 +3138,17 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
     ClearTarget()
     local castspellid = -1
     local castspelloverride = -1    
+    local castedGreater = false
 
     if AllPallys[UnitName("player")][btn.buffID] == nil then return end
     PP_Debug("Casting " .. btn.buffID .. " on " .. btn.classID)
+    local canCastGreater =
+        (mousebtn == "LeftButton") and
+        (RegularBlessings == false) and
+        (AllPallys[UnitName("player")][btn.buffID]["id"] ~= AllPallys[UnitName("player")][btn.buffID]["idsmall"]) and
+        (PP_Symbols > 0) and
+        ((GetNumRaidMembers() > 0) or (GetNumPartyMembers() > 0))
+
     if (mousebtn == "RightButton") then
         if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL) < 1 then
             CastSpell(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL)
@@ -3149,11 +3157,21 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
             return
         end
     elseif (mousebtn == "LeftButton") then
-        if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL) < 1 then
-            CastSpell(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL)
-            castspellid = btn.buffID
+        if canCastGreater then
+            if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL) < 1 then
+                CastSpell(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL)
+                castspellid = btn.buffID
+                castedGreater = true
+            else
+                return
+            end
         else
-            return
+            if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL) < 1 then
+                CastSpell(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL)
+                castspellid = btn.buffID
+            else
+                return
+            end
         end
     end
 
@@ -3166,7 +3184,7 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
                 RecentCast = true
             end
         else
-            if (mousebtn == "LeftButton" and not (AllPallys[UnitName("player")][btn.buffID]["id"] == AllPallys[UnitName("player")][btn.buffID]["idsmall"])) then
+            if castedGreater then
                 if LastCast[btn.buffID .. btn.classID] and LastCast[btn.buffID .. btn.classID] > (PALLYPOWER_GREATERBLESSINGDURATION) - PALLYPOWER_BLESSINGTRESHOLD then
                     RecentCast = true
                 end
@@ -3185,7 +3203,7 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
         end
         skipclear = false
         -- Disable Greater Blessing LeftButton for pets if assignments differ
-        if (btn.classID == 9) and (mousebtn == "LeftButton") then
+        if (btn.classID == 9) and castedGreater then
                 local player = UnitName("player")
                 if PallyPower_Assignments[player][0] ~= PallyPower_Assignments[player][9] then
                     SpellStopTargeting()
@@ -3238,7 +3256,7 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
                     LastCast[btn.buffID .. btn.classID] = PALLYPOWER_NORMALBLESSINGDURATION
                     LastCastPlayer[stats.name] = PALLYPOWER_NORMALBLESSINGDURATION
                 else
-                    if (mousebtn == "LeftButton" and not(AllPallys[UnitName("player")][btn.buffID]["id"] == AllPallys[UnitName("player")][btn.buffID]["idsmall"])) then
+                    if castedGreater then
                         LastCast[btn.buffID .. btn.classID] = PALLYPOWER_GREATERBLESSINGDURATION
                     else
                         if LastCast[btn.buffID .. btn.classID] == nil or LastCast[btn.buffID .. btn.classID] < PALLYPOWER_NORMALBLESSINGDURATION then 
@@ -3259,7 +3277,7 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
                     PallyPower_RemoveFromTable(btn.need,UnitName(unit))
                 end
 
-                if (RegularBlessings == false and mousebtn == "LeftButton" and not(AllPallys[UnitName("player")][btn.buffID]["id"] == AllPallys[UnitName("player")][btn.buffID]["idsmall"])) then
+                if castedGreater then
                     for unit, stats in CurrentBuffs[btn.classID] do
                         if GetNormalBlessings(UnitName("player"),btn.classID,UnitName(unit)) == -1 then   
                             if UnitIsVisible(unit) then
@@ -3364,6 +3382,7 @@ function PallyPower_AutoBless(mousebutton)
         ClearTarget()
         local castspellid = -1
         local castspelloverride = -1
+        local castedGreater = false
         
         if AllPallys[UnitName("player")][btn.buffID] == nil then 
             lastClassBtn = lastClassBtn + 1
@@ -3373,6 +3392,13 @@ function PallyPower_AutoBless(mousebutton)
         end
 
         PP_Debug("Casting " .. btn.buffID .. " on " .. btn.classID)
+        local canCastGreater =
+            (mousebutton == "Hotkey2") and
+            (RegularBlessings == false) and
+            (AllPallys[UnitName("player")][btn.buffID]["id"] ~= AllPallys[UnitName("player")][btn.buffID]["idsmall"]) and
+            (PP_Symbols > 0) and
+            ((GetNumRaidMembers() > 0) or (GetNumPartyMembers() > 0))
+
         if (mousebutton == "Hotkey1") then
             if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL) < 1 then
                 CastSpell(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL)
@@ -3381,11 +3407,21 @@ function PallyPower_AutoBless(mousebutton)
                 return
             end
         elseif (mousebutton == "Hotkey2") then
-            if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL) < 1 then
-                CastSpell(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL)
-                castspellid = btn.buffID
+            if canCastGreater then
+                if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL) < 1 then
+                    CastSpell(AllPallys[UnitName("player")][btn.buffID]["id"], BOOKTYPE_SPELL)
+                    castspellid = btn.buffID
+                    castedGreater = true
+                else
+                    return
+                end
             else
-                return
+                if GetSpellCooldown(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL) < 1 then
+                    CastSpell(AllPallys[UnitName("player")][btn.buffID]["idsmall"], BOOKTYPE_SPELL)
+                    castspellid = btn.buffID
+                else
+                    return
+                end
             end
         end
 
@@ -3396,7 +3432,7 @@ function PallyPower_AutoBless(mousebutton)
                 RecentCast = true
             end
         else
-            if (mousebutton == "Hotkey2" and not (AllPallys[UnitName("player")][btn.buffID]["id"] == AllPallys[UnitName("player")][btn.buffID]["idsmall"])) then
+            if castedGreater then
                 if LastCast[btn.buffID .. btn.classID] and LastCast[btn.buffID .. btn.classID] > (PALLYPOWER_GREATERBLESSINGDURATION) - PALLYPOWER_BLESSINGTRESHOLD then
                     RecentCast = true
                 end
@@ -3416,7 +3452,7 @@ function PallyPower_AutoBless(mousebutton)
                 end
                 skipclear = false
                 -- Disable Greater Blessing Hotkey2 for pets if assignments differ
-                if (btn.classID == 9) and (mousebutton == "Hotkey2") then
+                if (btn.classID == 9) and castedGreater then
                         local player = UnitName("player")
                         if PallyPower_Assignments[player][0] ~= PallyPower_Assignments[player][9] then
                             SpellStopTargeting()
@@ -3469,7 +3505,7 @@ function PallyPower_AutoBless(mousebutton)
                             LastCast[btn.buffID .. btn.classID] = PALLYPOWER_NORMALBLESSINGDURATION
                             LastCastPlayer[stats.name] = PALLYPOWER_NORMALBLESSINGDURATION
                         else
-                            if (mousebutton == "Hotkey2" and not(AllPallys[UnitName("player")][btn.buffID]["id"] == AllPallys[UnitName("player")][btn.buffID]["idsmall"])) then
+                            if castedGreater then
                                 LastCast[btn.buffID .. btn.classID] = PALLYPOWER_GREATERBLESSINGDURATION
                             else
                                 if LastCast[btn.buffID .. btn.classID] == nil or LastCast[btn.buffID .. btn.classID] < PALLYPOWER_NORMALBLESSINGDURATION then 
@@ -3489,7 +3525,7 @@ function PallyPower_AutoBless(mousebutton)
                             PallyPower_RemoveFromTable(btn.need,UnitName(unit))
                         end
         
-                        if (RegularBlessings == false and mousebutton == "Hotkey2" and not(AllPallys[UnitName("player")][btn.buffID]["id"] == AllPallys[UnitName("player")][btn.buffID]["idsmall"])) then
+                        if castedGreater then
                             for unit, stats in CurrentBuffs[btn.classID] do
                                 if GetNormalBlessings(UnitName("player"),btn.classID,UnitName(unit)) == -1 then   
                                     if UnitIsVisible(unit) then
