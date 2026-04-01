@@ -3327,7 +3327,8 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
     -- Fallback: if no valid roster unit was found but this class matches the player,
     -- force a self-target attempt before reporting failure.
     local _, playerClassToken = UnitClass("player")
-    if btn.classID == PallyPower_GetClassID(playerClassToken) and
+    if (GetNumRaidMembers() == 0 and GetNumPartyMembers() == 0) and
+       btn.classID == PallyPower_GetClassID(playerClassToken) and
        SpellCanTargetUnit("player") and
        (not UnitIsDeadOrGhost("player")) and
        PallyPower_CheckTargetLoS("player") and
