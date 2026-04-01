@@ -119,6 +119,8 @@ if ( GetLocale() == "esES" ) then
     PALLYPOWER_OPTIONS_TRANSPARENCY = "Transparencia global";
     PALLYPOWER_OPTIONS_COLOR_BUFFBAR = "Colorear BuffBar (Rojo=Falta, Amarillo=Parcial, Transparente=Completo)";
     PALLYPOWER_OPTIONS_LEFTCLICK_OVERRIDE = "Usar asignaciones por jugador con clic izquierdo";
+    PALLYPOWER_OPTIONS_SOUND_SELECT = "Sonido al expirar";
+    PALLYPOWER_SOUND_RANDOM_LABEL = "Aleatorio";
 
     PALLYPOWER_TEXT_DROPDOWN_SAVENEW = "Guardar nuevo conjunto";
     PALLYPOWER_TEXT_DROPDOWN_SAVECURRENT = "Guardar conjunto actual";

@@ -57,9 +57,13 @@ PP_PerUser = {
     useunitxp_sp3 = false,
     usehdicons = false,
     transparency = 0.5,
-    leftclickoverride = true
+    leftclickoverride = true,
+    soundrandom = true,
+    soundfile = "ding.mp3"
 }
 PP_UnitXPDllLoaded = false
+local PALLYPOWER_SOUND_RANDOM = "__RANDOM__"
+local PallyPower_ExpireSounds = {"ding.mp3", "ouille-aie.mp3", "m-e-o-w.mp3"} -- Add new sound filenames here.
 
 PallyPower_ClassTexture = {}
 
@@ -225,6 +229,70 @@ function PallyPower_LeftClickOverrideOption()
     end
 end
 
+local function PallyPower_GetExpireSoundSelection()
+    if PP_PerUser.soundrandom == true then
+        return PALLYPOWER_SOUND_RANDOM
+    end
+    return PP_PerUser.soundfile or "ding.mp3"
+end
+
+local function PallyPower_GetExpireSoundLabel(soundValue)
+    if soundValue == PALLYPOWER_SOUND_RANDOM then
+        return PALLYPOWER_SOUND_RANDOM_LABEL
+    end
+    return soundValue
+end
+
+local function PallyPower_SetExpireSoundSelection(soundValue)
+    if soundValue == PALLYPOWER_SOUND_RANDOM then
+        PP_PerUser.soundrandom = true
+    else
+        PP_PerUser.soundrandom = false
+        PP_PerUser.soundfile = soundValue
+    end
+end
+
+function PallyPower_SoundSelectDropDown_OnClick()
+    PallyPower_SetExpireSoundSelection(this.value)
+    UIDropDownMenu_SetSelectedValue(SoundSelectDropDown, this.value)
+    UIDropDownMenu_SetText(PallyPower_GetExpireSoundLabel(this.value), SoundSelectDropDown)
+end
+
+function PallyPower_SoundSelectDropDown_Initialize()
+    local info = {}
+
+    info.text = PALLYPOWER_SOUND_RANDOM_LABEL
+    info.value = PALLYPOWER_SOUND_RANDOM
+    info.func = PallyPower_SoundSelectDropDown_OnClick
+    UIDropDownMenu_AddButton(info)
+
+    for _, soundFile in ipairs(PallyPower_ExpireSounds) do
+        info = {}
+        info.text = soundFile
+        info.value = soundFile
+        info.func = PallyPower_SoundSelectDropDown_OnClick
+        UIDropDownMenu_AddButton(info)
+    end
+end
+
+function PallyPower_SoundSelectDropDown_Update()
+    local selection = PallyPower_GetExpireSoundSelection()
+    UIDropDownMenu_SetSelectedValue(SoundSelectDropDown, selection)
+    UIDropDownMenu_SetText(PallyPower_GetExpireSoundLabel(selection), SoundSelectDropDown)
+end
+
+local function PallyPower_PlayExpireSound()
+    local soundFile = "ding.mp3"
+    if PP_PerUser.soundrandom == true then
+        if table.getn(PallyPower_ExpireSounds) > 0 then
+            soundFile = PallyPower_ExpireSounds[math.random(table.getn(PallyPower_ExpireSounds))]
+        end
+    elseif PP_PerUser.soundfile and PP_PerUser.soundfile ~= "" then
+        soundFile = PP_PerUser.soundfile
+    end
+    PlaySoundFile("Interface\\Addons\\PallyPowerTW\\Sounds\\" .. soundFile)
+end
+
 local function table_wipe(t)
     for k in pairs(t) do t[k] = nil end
 end
@@ -276,6 +344,13 @@ function PallyPower_InitConfig()
     if PP_PerUser.transparency == nil then PP_PerUser.transparency = 0.5 end
     if PP_PerUser.colorbuffbar == nil then PP_PerUser.colorbuffbar = false end
     if PP_PerUser.leftclickoverride == nil then PP_PerUser.leftclickoverride = true end
+    if PP_PerUser.soundrandom == nil then PP_PerUser.soundrandom = true end
+    if PP_PerUser.soundfile == nil or PP_PerUser.soundfile == "" then PP_PerUser.soundfile = "ding.mp3" end
+    -- One-time migration: make Random the default sound mode for existing profiles.
+    if PP_PerUser.soundselectionversion == nil then
+        PP_PerUser.soundrandom = true
+        PP_PerUser.soundselectionversion = 1
+    end
     if (pcall(UnitXP, "nop", "nop") == true) then
        PP_UnitXPDllLoaded = true;
     else
@@ -344,7 +419,7 @@ function PallyPower_OnUpdate(tdiff)
         LastCast[i] = k - tdiff
         if LastCast[i] <= 0 then
             if PP_PerUser.playsoundwhen0 == true then
-                PlaySoundFile("Interface\\Addons\\PallyPowerTW\\Sounds\\ding.mp3")
+                PallyPower_PlayExpireSound()
             end
             LastCast[i] = nil
         end
@@ -355,7 +430,7 @@ function PallyPower_OnUpdate(tdiff)
         LastCastPlayer[i] = k - tdiff
         if LastCastPlayer[i] <= 0 then
             if PP_PerUser.playsoundwhen0 == true then
-                PlaySoundFile("Interface\\Addons\\PallyPowerTW\\Sounds\\ding.mp3")
+                PallyPower_PlayExpireSound()
             end
             LastCastPlayer[i] = nil
         end
@@ -3552,6 +3627,7 @@ end
 function PallyPower_Options()
     MinimapButtonOptionSlider:SetValue(PP_PerUser.minimapbuttonpos);
     TransparencyOptionSlider:SetValue(PP_PerUser.transparency);
+    PallyPower_SoundSelectDropDown_Update()
     PallyPower_OptionsFrame:Show()
 end
 

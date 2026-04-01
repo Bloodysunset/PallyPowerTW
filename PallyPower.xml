@@ -1836,7 +1836,7 @@
 	</Frame>
 	<Frame name="PallyPower_OptionsFrame" hidden="true" parent="UIParent" toplevel="true" movable="true" enableMouse="true" frameStrata="DIALOG"> 
 		<Size>
-			<AbsDimension x="400" y="475" />
+			<AbsDimension x="400" y="525" />
 		</Size>
 		<Anchors>
 			<Anchor point="CENTER" relativeTo="UIParent" relativePoint="CENTER"> 
@@ -2082,6 +2082,18 @@
 						<Anchor point="TOPLEFT">
 							<Offset>
 								<AbsDimension x="7" y="-450" />
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+				<FontString name="$parentOption18" inherits="GameFontHighlight" text="PALLYPOWER_OPTIONS_SOUND_SELECT" justifyH="LEFT">
+					<Size>
+						<AbsDimension x="300" y="16" />
+					</Size>
+					<Anchors>
+						<Anchor point="TOPLEFT">
+							<Offset>
+								<AbsDimension x="7" y="-475" />
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -2562,6 +2574,27 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>			
+			<Frame name="SoundSelectDropDown" inherits="UIDropDownMenuTemplate">
+				<Size>
+					<AbsDimension x="220" y="24" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="165" y="-470" />
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						UIDropDownMenu_SetWidth(140, this);
+						UIDropDownMenu_Initialize(this, PallyPower_SoundSelectDropDown_Initialize);
+					</OnLoad>
+					<OnShow>
+						PallyPower_SoundSelectDropDown_Update();
+					</OnShow>
+				</Scripts>
+			</Frame>
 		</Frames>
 		<Scripts>
 			<OnLoad>

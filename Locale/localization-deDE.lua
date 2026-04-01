@@ -119,6 +119,8 @@ if ( GetLocale() == "deDE" ) then
     PALLYPOWER_OPTIONS_TRANSPARENCY = "Globale Transparenz";
     PALLYPOWER_OPTIONS_COLOR_BUFFBAR = "Färbe BuffBar (Rot=Fehlt, Gelb=Teilweise, Transparent=Vollständig)";
     PALLYPOWER_OPTIONS_LEFTCLICK_OVERRIDE = "Spielerspezifische Zuweisungen bei Linksklick nutzen";
+    PALLYPOWER_OPTIONS_SOUND_SELECT = "Ablauf-Sound";
+    PALLYPOWER_SOUND_RANDOM_LABEL = "Zufällig";
 
     PALLYPOWER_TEXT_DROPDOWN_SAVENEW = "Neues Set speichern";
     PALLYPOWER_TEXT_DROPDOWN_SAVECURRENT = "Aktuelles Set speichern";
