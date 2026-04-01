@@ -15,6 +15,7 @@ PALLYPOWER_AURA_CLASS = 10
 PALLYPOWER_SEAL_CLASS = 11
 PP_PREFIX = "PLPWR"
 TACTICA_PREFIX = "TACTICA"
+SLASH_PPSOUND1 = "/ppsound"
 
 AllPallys = {}
 AllPallysAuras = {}
@@ -378,6 +379,10 @@ function PallyPower_OnLoad()
     this:SetScale(1)
     SlashCmdList["PALLYPOWER"] = function(msg)
         PallyPower_SlashCommandHandler(msg)
+    end
+    SlashCmdList["PPSOUND"] = function(msg)
+        PallyPower_PlayExpireSound()
+        PallyPower_ShowFeedback("Played selected expiry sound", 0, 1, 0)
     end
     --Hide BuffBar if not paladin. You can still see the assignments grid
     local _, class = UnitClass("player")
@@ -3047,6 +3052,16 @@ function PallyPower_ScanRaid()
 end
 
 function PallyPower_GetClassID(class)
+    if class == "WARRIOR" then return 0 end
+    if class == "ROGUE" then return 1 end
+    if class == "PRIEST" then return 2 end
+    if class == "DRUID" then return 3 end
+    if class == "PALADIN" then return 4 end
+    if class == "HUNTER" then return 5 end
+    if class == "MAGE" then return 6 end
+    if class == "WARLOCK" then return 7 end
+    if class == "SHAMAN" then return 8 end
+    if class == "PET" then return 9 end
     for id, name in PallyPower_ClassID do
         if (name == class) then
             return id
@@ -3290,6 +3305,21 @@ function PallyPowerBuffButton_OnClick(btn, mousebtn)
                 TargetLastTarget()
                 return
         end
+    end
+    -- Fallback: if no valid roster unit was found but this class matches the player,
+    -- force a self-target attempt before reporting failure.
+    local _, playerClassToken = UnitClass("player")
+    if btn.classID == PallyPower_GetClassID(playerClassToken) and
+       SpellCanTargetUnit("player") and
+       (not UnitIsDeadOrGhost("player")) and
+       PallyPower_CheckTargetLoS("player") and
+       (not PallyPower_CastingSalvationOnTank("player", castspellid, castspelloverride))
+    then
+        SpellTargetUnit("player")
+        recentCastProtection = 2
+        uiDirty = true
+        TargetLastTarget()
+        return
     end
     SpellStopTargeting()
     TargetLastTarget()
